@@ -1,11 +1,11 @@
 resources:
   jobs:
-    NYC_Pipeline_Job:
+    nyc_job:
       name: "${bundle.target}_nyc_pipeline_job"
       tasks:
         - task_key: nyc_pipeline_task
           pipeline_task:
-            pipeline_id: ${resources.pipelines.nyc_taxi_pipeline.id}
+            pipeline_id: ${resources.pipelines.nyc_pipeline.id}
 
       parameters:
         - name: catalog

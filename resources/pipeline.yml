@@ -1,6 +1,6 @@
 resources:
   pipelines:
-    nyc_taxi_pipeline:
+    nyc_pipeline:
       name: ${bundle.target}_nyc_taxi_pipeline
       catalog: ${var.target_catalog}
       # schema: ${var.schema}
@@ -9,11 +9,11 @@ resources:
       "libraries": [
         {
           "glob": {
-            "include": "/Workspace/Users/aslan.kbtu@gmail.com/NYCtaxi Project/src/dlt pipelines/**"
+            "include": "../src/dlt pipelines/**"
           }
         }
       ]
       configuration:
        target: ${bundle.target}
       #  raw_data_path: ${var.raw_data_path}
-      "root_path": "/Workspace/Users/aslan.kbtu@gmail.com/NYCtaxi Project/src/dlt pipelines"
+      "root_path": "../src/dlt pipelines"
