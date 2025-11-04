@@ -1,0 +1,7 @@
+variables:
+  target_catalog:
+    description: "Sets the catalog name dynamically per environment"
+    default: nyctaxi_test
+  schema:
+    description: ""
+    default: default

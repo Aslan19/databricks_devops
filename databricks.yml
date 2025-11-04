@@ -1,0 +1,24 @@
+bundle:
+  name: nyctaxi_etl
+
+include:
+  - "./resources/pipeline.yml"
+  - "./resources/variables.yml"
+  - "./resources/job.yml"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      target_catalog: nyctaxi_test
+    workspace:
+      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/dev"
+
+  prod:
+    mode: production
+    variables:
+      target_catalog: nyctaxi_prod
+      # raw_data_path: "/Volumes/nyctaxi_prod/default/health"
+    workspace:
+      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/prod"
