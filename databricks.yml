@@ -1,0 +1,62 @@
+bundle:
+  name: nyctaxi_etl
+
+variables:
+  target_catalog:
+    description: "Sets the catalog name dynamically per environment"
+    default: nyctaxi_test
+  schema:
+    description: ""
+    default: default
+
+resources:
+  pipelines:
+    nyc_taxi_pipeline:
+      name: ${bundle.target}_nyc_taxi_pipeline
+      catalog: ${var.target_catalog}
+      # schema: ${var.schema}
+      target: ${var.schema}
+      serverless: true
+      "libraries": [
+        {
+          "glob": {
+            "include": "/Workspace/Users/aslan.kbtu@gmail.com/NYCtaxi Project/src/dlt pipelines/**"
+          }
+        }
+      ]
+      configuration:
+       target: ${bundle.target}
+      #  raw_data_path: ${var.raw_data_path}
+      "root_path": "/Workspace/Users/aslan.kbtu@gmail.com/NYCtaxi Project/src/dlt pipelines"
+      
+  jobs:
+    NYC_Pipeline_Job:
+      name: "${bundle.target}_nyc_pipeline_job"
+      tasks:
+        - task_key: nyc_pipeline_task
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.nyc_taxi_pipeline.id}
+
+      parameters:
+        - name: catalog
+          default: "${var.target_catalog}"
+        - name: target
+          default: "${bundle.target}"
+      performance_target: PERFORMANCE_OPTIMIZED
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      target_catalog: nyctaxi_test
+    workspace:
+      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/dev"
+
+  prod:
+    mode: production
+    variables:
+      target_catalog: nyctaxi_prod
+      # raw_data_path: "/Volumes/nyctaxi_prod/default/health"
+    workspace:
+      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/prod"
