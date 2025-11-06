@@ -6,6 +6,7 @@ include:
   - "./resources/variables.yml"
   - "./resources/job.yml"
 
+
 targets:
   dev:
     mode: development
