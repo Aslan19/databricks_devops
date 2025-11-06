@@ -13,7 +13,8 @@ targets:
     variables:
       target_catalog: nyctaxi_test
     workspace:
-      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/dev"
+      #root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/dev"
+      root_path: "/Workspace/Users/aslan.kbtu@gmail.com/.bundle/${bundle.name}/dev"
 
   prod:
     mode: production
