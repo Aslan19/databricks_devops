@@ -32,7 +32,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DB_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DB_TOKEN }}
         run: |
-          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
+          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" #--quiet
 
       - name: Validate bundle YAML
         run: |
