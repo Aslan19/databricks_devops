@@ -23,13 +23,13 @@ jobs:
 
       - name: Install CLI tools
         run: |
-          pip install databricks-cli==0.225.0
-          pip install pyyaml  # if you need to manipulate bundle files
+          pip install databricks==0.225.0
+          # pip install pyyaml  # if you need to manipulate bundle files
 
       - name: Configure Databricks auth
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_HOST: ${{ secrets.DB_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DB_TOKEN }}
         run: |
           databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
 
