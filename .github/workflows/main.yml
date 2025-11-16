@@ -42,7 +42,7 @@ jobs:
       - name: Run bundle validation
         run: |
           echo "Running Databricks bundle validation..."
-          databricks bundle validate
+          databricks bundle validate -t dev
 
   deploy:
     name: Deploy Bundle
@@ -63,7 +63,7 @@ jobs:
       - name: Deploy the bundle
         run: |
           echo "Deploying bundle..."
-          databricks bundle deploy --environment prod
+          databricks bundle deploy -t dev
 
   run-job:
     name: Run Bundle Job
@@ -79,7 +79,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DB_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DB_TOKEN }}
         run: |
-          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
+          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN"
 
       - name: Trigger bundle job
         env:
