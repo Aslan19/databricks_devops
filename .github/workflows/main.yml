@@ -115,4 +115,4 @@ jobs:
       - name: Destroy bundle job
         run: |
           echo "Deleting bundles..."
-          databricks bundle destroy -t dev
+          databricks bundle destroy -t dev --auto-approve
