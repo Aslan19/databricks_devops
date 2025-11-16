@@ -22,8 +22,9 @@ jobs:
           python-version: "3.10"
 
       - name: Install CLI tools
-        run: |
-          pip install databricks==0.225.0
+      - uses: databricks/setup-cli@main
+        # run: |
+        #   pip install databricks==0.225.0
           # pip install pyyaml  # if you need to manipulate bundle files
 
       - name: Configure Databricks auth
