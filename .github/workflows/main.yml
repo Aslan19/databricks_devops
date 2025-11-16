@@ -1,0 +1,96 @@
+name: Validate, Deploy and Run Bundle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install CLI tools
+        run: |
+          pip install databricks-cli==0.225.0
+          pip install pyyaml  # if you need to manipulate bundle files
+
+      - name: Configure Databricks auth
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
+
+      - name: Validate bundle YAML
+        run: |
+          echo "Validating YAML files..."
+          yamllint .
+
+      - name: Run bundle validation
+        run: |
+          echo "Running Databricks bundle validation..."
+          databricks bundle validate
+
+  deploy:
+    name: Deploy Bundle
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Databricks auth
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
+
+      - name: Deploy the bundle
+        run: |
+          echo "Deploying bundle..."
+          databricks bundle deploy --environment prod
+
+  run-job:
+    name: Run Bundle Job
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure Databricks auth
+        env:
+          DATABRICKS_HOST: ${{ secrets.DB_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DB_TOKEN }}
+        run: |
+          databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" --quiet
+
+      - name: Trigger bundle job
+        env:
+          JOB_NAME: "nyc_job"
+        run: |
+          echo "Running job: $JOB_NAME"
+          job_id=$(databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name=="'"$JOB_NAME"'") | .job_id')
+          
+          if [ -z "$job_id" ]; then
+            echo "ERROR: Job not found. Check job name."
+            exit 1
+          fi
+          
+          run_id=$(databricks jobs run-now --job-id "$job_id" --output JSON | jq -r '.run_id')
+          echo "Triggered run ID: $run_id"
