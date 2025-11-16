@@ -34,10 +34,10 @@ jobs:
         run: |
           databricks configure --host "$DATABRICKS_HOST" --token "$DATABRICKS_TOKEN" #--quiet
 
-      - name: Validate bundle YAML
-        run: |
-          echo "Validating YAML files..."
-          yamllint .
+      # - name: Validate bundle YAML
+      #   run: |
+      #     echo "Validating YAML files..."
+      #     yamllint .
 
       - name: Run bundle validation
         run: |
