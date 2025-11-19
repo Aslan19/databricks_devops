@@ -6,6 +6,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "s
 
 from helpers import project_functions
 
+from pyspark.sql import SparkSession
+
+
 def test_clean_bronze_adds_processing_time(spark):
     df = spark.createDataFrame([Row(vendor_id="1")])
     result = project_functions.clean_bronze(df)

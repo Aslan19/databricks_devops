@@ -70,23 +70,34 @@ def validate_and_cast_silver(df):
     )
 
 
+from pyspark.sql.functions import col, to_timestamp, to_date, when, try_divide
+
 def enrich_silver(df):
     """Adds new business-level transformations."""
     return (
         df
+        # ensure timestamp types (important for Spark Connect)
+        .withColumn("pickup_datetime", to_timestamp(col("pickup_datetime")))
+        .withColumn("dropoff_datetime", to_timestamp(col("dropoff_datetime")))
+
         # trip duration in minutes
-        .withColumn("trip_duration_minutes",
-                    (col("dropoff_datetime").cast("long") - col("pickup_datetime").cast("long")) / 60)
+        .withColumn(
+            "trip_duration_minutes",
+            (col("dropoff_datetime").cast("long") - col("pickup_datetime").cast("long")) / 60
+        )
 
         # avg speed in miles per hour
-        .withColumn("average_speed_mph",
-                    col("trip_distance") / (col("trip_duration_minutes") / 60))
+        .withColumn(
+            "average_speed_mph",
+            try_divide(col("trip_distance"), (col("trip_duration_minutes") / 60))
+        )
 
         # normalize vendor_id
-        .withColumn("vendor_id_norm",
-                    when(col("vendor_id").isin("1", "2"), col("vendor_id"))
-                    .otherwise("unknown"))
+        # .withColumn(
+        #     "vendor_id_norm",
+        #     when(col("vendor_id").isin("1", "2"), col("vendor_id")).otherwise("unknown")
+        # )
 
-        # date column for partitioning and aggregations
+        # date column
         .withColumn("pickup_date", to_date(col("pickup_datetime")))
     )

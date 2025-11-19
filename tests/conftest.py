@@ -1,10 +1,13 @@
 import pytest
+import sys
 from pyspark.sql import SparkSession
 
 @pytest.fixture(scope="session")
 def spark():
-    # Create a Spark session. If one already exists, reuse it.
-    spark = SparkSession.builder.getOrCreate()
-    
-    # Pass the Spark session to the test function.
-    yield spark
+    sys.dont_write_bytecode = True
+
+    spark = SparkSession.getActiveSession()
+    if spark is None:
+        raise RuntimeError("Must run inside a Databricks cluster.")
+
+    return spark
